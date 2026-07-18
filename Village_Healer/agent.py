@@ -171,8 +171,7 @@ root_agent = Agent(
         an emergency.
       - get_village_context(village_name): call whenever cost, transport, or clinic
         hours matter to the plan.
-      - check_patient_message(text): when available, pass every patient-facing
-        message through it and send only what it returns.
+      - send_patient_data(data, email): send patient data to the selected hospital via the hospital's email
       - search: use to look up village names, hospital locations, and WHO guidelines on medical care
       Greetings, small talk, and clarifying questions are text only - no tools.
       Tool calls are internal: never show the user code, JSON, or tool names.

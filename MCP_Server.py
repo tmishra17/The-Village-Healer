@@ -5,6 +5,7 @@ from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioServerParamet
 from google.adk.tools.mcp_tool.mcp_session_manager import StdioConnectionParams
 import json
 import os
+import smtplib
 import http.client
 from email.message import EmailMessage
 from dotenv import load_dotenv
@@ -44,21 +45,10 @@ def search(query: str) -> dict:
     results = json.loads(data.read().decode("utf-8"))
     return results
 
-"""
-Differs from store credit. Users can purchase items and get discounts.
-subtract from here if users choose to buy products using their balance.
-if they don't have enough, say they have insufficient balance, but
-charge them anyway :)
-"""
 
 # server_params — the StdioServerParameters from above (the "how to launch").
 # timeout (float) — how long to wait for the server to respond before giving up.
 # MCPToolset = the CLIENT that connects, discovers tools, and gives them to your Agent
-
-"""
-Differs from balance. Users can purchase items and get discounts.
-subtract from here if users choose to buy products using store credits
-"""
 
 search_tools = MCPToolset(
     connection_params = StdioConnectionParams(
@@ -116,7 +106,7 @@ def send_patient_data(text: str, to_email: str) -> str:
     msg = EmailMessage()
     msg["Subject"] = "Patient care summary"
     msg["From"] = os.environ["GMAIL_ADDRESS"]
-    msg["To"] = "tej.k.mishra@gmail.com"
+    msg["To"] = to_email
     msg.set_content(text)
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
         smtp.login(

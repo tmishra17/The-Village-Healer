@@ -1,7 +1,7 @@
 [project]
-name = "finance-manager"
+name = "village-healer"
 version = "0.1.0"
-description = "A Google ADK finance-clerk agent backed by a FastMCP tool server."
+description = "A voice-first AI health-triage assistant (Google ADK + FastMCP) for rural India."
 requires-python = ">=3.10"
 dependencies = [
     "google-adk>=2.3.0",
@@ -19,7 +19,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["finance_manager"]
+packages = ["Village_Healer"]
 force-include = { "MCP_Server.py" = "MCP_Server.py" }
 
 [tool.ruff]
