@@ -1,0 +1,4 @@
+# The Village Healer
+This project is to help people in india and around the world with health advice (NOT A REPLACEMENT FOR DOCTORS). This agent is primarily for voice, so people can speak their issue directly to the agent and it can understand it. It can advise on smaller issues (e.g. cut on the hand or a cold) and on bigger issues it will ask the user to get medical advice. If the user has a conflict with the decision (e.g. can't go to doctors due to harvesting season), the model will reason with the user and find the best outcome for them (e.g. "Even though you said you need to harvest crops to sell on the market, the 5 hours it takes to go to the doctors now will save you weeks later because if the cut gets worse it could cost you months vs hours now)
+
+# Tech Stack
