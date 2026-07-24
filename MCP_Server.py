@@ -1,8 +1,8 @@
 from fastmcp import FastMCP
 from google.adk.agents import Agent
 from google.adk.models.lite_llm import LiteLlm
-from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioServerParameters
-from google.adk.tools.mcp_tool.mcp_session_manager import StdioConnectionParams
+
+from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPConnectionParams
 import json
 import os
 import smtplib
@@ -10,13 +10,14 @@ import http.client
 from email.message import EmailMessage
 from dotenv import load_dotenv
 
+
+
+
 load_dotenv()
 mcp = FastMCP("The Village Healer")
 
 SERPER_API_KEY = os.environ["SERPER_API_KEY"]
 
-
-conn = http.client.HTTPSConnection("google.serper.dev")
 
 @mcp.tool
 def search(query: str) -> dict:
@@ -39,59 +40,60 @@ def search(query: str) -> dict:
         'X-API-KEY': SERPER_API_KEY,
         'Content-Type': 'application/json'
     }
-  
-    conn.request("POST", "/search", payload, headers)
-    data = conn.getresponse()
-    results = json.loads(data.read().decode("utf-8"))
-    return results
+    
+    conn = http.client.HTTPSConnection("google.serper.dev", timeout=30)
+    try:
+        conn.request("POST", "/places", payload, headers)
+        data = conn.getresponse()
+        return json.loads(data.read().decode("utf-8"))
+    finally:
+        conn.close()
+
+    # New connection per call — reused HTTPSConnection dies after keep-alive close.
 
 
 # server_params — the StdioServerParameters from above (the "how to launch").
 # timeout (float) — how long to wait for the server to respond before giving up.
 # MCPToolset = the CLIENT that connects, discovers tools, and gives them to your Agent
 
-search_tools = MCPToolset(
-    connection_params = StdioConnectionParams(
-        server_params = StdioServerParameters(
-            command="fastmcp", # program/server to run
-            args=["run", "MCP_Server.py"], # arguments (list of commands to start the server)
-        )
-    )
-)
+
+
 
 
 @mcp.tool
-def find_nearest_facility(village_name: str):
+def find_nearest_facility(village_name: str) -> tuple[float, float, str]:
   """
     Based on the location of the village, find the nearest care facility within the patient's budget (government hospital is the cheapest, if they have money, find the nearest hospital). 
 
     IMPORTANT: User this only on user request or in RED emergency situation. Use in the query keywords like 'Bolagarh Hospital', 'government hospital near me', 'high quality hospital near me'
 
-    Returns lat and long of nearest location
+    Returns Tuple of lat, long, and address of nearest hospital
   """
-  facility_name = search(village_name)
-  return facility_name["place_results"]["gps_coordinates"]
+  results = search(f"hospital near {village_name}")
+  places = results.get("places") or []
+  if not places:
+    raise ValueError(f"No facilities found near {village_name}")
+  place = places[0]
+  return place["latitude"], place["longitude"], place["address"]
 
-@mcp.tool
-def get_village_context(village_name: str, query: str) -> dict:
-  """
-    Use Serper to get the location of the village user provdes. Search for the village on Serper and find the nearest hospitals that are government verified or that have good reviews. 
+# @mcp.tool
+# def get_village_context(village_name: str, query: str) -> dict:
+#   """
+#     Use Serper to get the location of the village user provdes. Search for the village on Serper and find the nearest hospitals that are government verified or that have good reviews. 
     
-    IMPORTANT: USE THIS ONLY WHEN THE USER ASK FOR A RIDE TO A HOSPITAL OR THEIR SITUATION IS A RED
+#     IMPORTANT: USE THIS ONLY WHEN THE USER ASK FOR A RIDE TO A HOSPITAL OR THEIR SITUATION IS A RED
 
-    Argument:
-      - village_name name of the village user provides
-      - query: query you type in the search result for serper
-    Returns coordinate locations of the village
-  """
-  results = search(query)
+#     Argument:
+#       - village_name name of the village user provides
+#       - query: query you type in the search result for serper
+#     Returns coordinate locations of the village
+#   """
+#   results = search(query + village_name)
 
-  return results["place_results"]["gps_coordinates"]
-# You will give a disclaimer at the bottom about real medical diagnosis, you do not need to say you are not a doctor
-# Say so in your first message, and again any time the user seems to believe otherwise.
+#   return results["place_results"]["gps_coordinates"]
 
 @mcp.tool
-def send_patient_data(text: str, to_email: str) -> str:
+def send_patient_data(text: str) -> str:
     """
         Sends the patient data to a legitimate hospital near them, in the style of a medical record. User serper to find the email of the hospital and then send the information via gmail in the style of a medical record. Use gmail SMTP to send the email
 
@@ -103,6 +105,8 @@ def send_patient_data(text: str, to_email: str) -> str:
         returns:
             - String informing user where the email was sent
     """
+
+    to_email = "tej.k.mishra@gmail.com"
     msg = EmailMessage()
     msg["Subject"] = "Patient care summary"
     msg["From"] = os.environ["GMAIL_ADDRESS"]
@@ -116,4 +120,4 @@ def send_patient_data(text: str, to_email: str) -> str:
         smtp.send_message(msg)
     return f"Email sent to {to_email}"
 if __name__ == "__main__":
-    mcp.run()
+    mcp.run(transport="http", host="127.0.0.1", port=9000)
