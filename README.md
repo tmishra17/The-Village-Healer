@@ -130,4 +130,9 @@ Four dimensions, per the brief:
 - Self-harm disclosures are treated as RED for a *human* response, including the Tele-MANAS helpline **14416**.
 - Every substantive reply ends with a reminder: this is guidance, not a diagnosis — see a certified medical professional.
 
+
+# Future add ons
+- Ranking based on the quality of search results in serper for the agent
+- Agent using queries to find the nearest village
+
 > *"Technology that does not serve the poor, and does not respect their agency, is not innovation."*
