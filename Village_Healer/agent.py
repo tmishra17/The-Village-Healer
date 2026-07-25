@@ -1,21 +1,123 @@
 from google.adk.agents import Agent
 from google.adk.models.lite_llm import LiteLlm
-from MCP_Server import search_tools
+# from MCP_Server import search_tools
+from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPConnectionParams
+from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
 import os
+import re
+from google.adk.apps import App
+from google.adk.plugins import ReflectAndRetryToolPlugin
+from typing import Optional
+from google.adk.agents.callback_context import CallbackContext
+from google.adk.models.llm_response import LlmResponse
 
+_DEFAULT_TOOL_RETRY_ATTEMPTS = 3
+
+def get_mcp_tool():
+    """
+    Safely instantiate MCPToolset to avoid Pydantic schema serialization issues.
+    
+    This connects the agent to an external MCP server via Streamable HTTP.
+    The MCP server can expose tools such as web_search, file_read, or custom logic.
+    """
+    return MCPToolset(
+        connection_params=StreamableHTTPConnectionParams(
+            url="http://127.0.0.1:9000/mcp"   # Your FastMCP or MCP server endpoint
+        )
+    )
+search_tools = get_mcp_tool()
 
 MODEL = LiteLlm(
   model="openai/openai/gpt-oss-20b",
   api_base = "http://10.0.10.51:8000/v1",
   api_key="temp"
+  # streaming=False
 )
+
+# _HARMONY_TOKEN = re.compile(r"<\|[^|>]+?\|>")
+
+MAX_TOOL_RETRIES = 3
+
+
+
+
+# def after_model(*, response) -> None:
+#     for call in response.tool_calls:
+#         original = call.name
+#         cleaned = sanitize_tool_name(name=original)
+#         if cleaned != original:
+#             log.warning("Sanitized tool name %r → %r", original, cleaned)
+#             call.name = cleaned
+#     # Then dispatch tools using the cleaned names
+
+# def sanitize_tool_name(*, name: str) -> str:
+#     """Strip trailing Harmony control tokens from a tool name."""
+#     if not name or "<|" not in name:
+#         return name
+
+#     cleaned = _HARMONY_TOKEN.split(name, maxsplit=1)[0].strip()
+#     return cleaned if cleaned else name
+
+
+# def sanitize_tool_names_after_model(
+#     *,
+#     callback_context: CallbackContext,
+#     llm_response: LlmResponse,
+# ) -> Optional[LlmResponse]:
+#     content = llm_response.content
+#     if content is None or not content.parts:
+#         return None
+
+#     for part in content.parts:
+#         function_call = part.function_call
+#         if function_call is None or not function_call.name:
+#             continue
+#         original = function_call.name
+#         cleaned = sanitize_tool_name(name=original)
+#         if cleaned != original:
+#             function_call.name = cleaned
+
+#     return None  # keep the mutated response
+
+
+# def run_with_tool_recovery(*, model, messages, tools, max_retries=MAX_TOOL_RETRIES):
+#     for attempt in range(max_retries + 1):
+#         response = model.generate(messages=messages, tools=tools)
+#         if not response.tool_calls:
+#             return response
+
+#         results = []
+#         failed = False
+#         for call in response.tool_calls:
+#             try:
+#                 results.append(dispatch_tool(call=call, tools=tools))
+#             except ToolError as exc:
+#                 failed = True
+#                 # Structured guidance — be specific about what went wrong
+#                 results.append(
+#                     {
+#                         "role": "tool",
+#                         "name": call.name,
+#                         "content": (
+#                             f"Tool call failed: {exc}. "
+#                             f"Registered tools: {list(tools)}. "
+#                             "Correct the name/arguments and try again."
+#                         ),
+#                     }
+#                 )
+
+#         messages = messages + [response] + results
+#         if not failed:
+#             return continue_or_finish(messages=messages)
+
+#     raise RuntimeError(f"Tool calls still failing after {max_retries} retries")
+
+
 
 
 VILLAGE_NAME = "Bolagarh"
-
-
   
-root_agent = Agent(
+agent = Agent(
     name="Village_Healer",
     model=MODEL,
     description="""
@@ -185,5 +287,15 @@ root_agent = Agent(
       like a critical emergency, please IMMEDIATELY dial 112 for help.
     """,
     tools=[search_tools],
-    output_key="total"
+    output_key="total",
+    # after_model_callback=sanitize_tool_names_after_model
 )
+
+app = App(
+    name="Village_Healer",
+    root_agent=agent,  # agent already has after_model_callback sanitizer
+    plugins=[
+        ReflectAndRetryToolPlugin(max_retries=_DEFAULT_TOOL_RETRY_ATTEMPTS),
+    ],
+)
+
