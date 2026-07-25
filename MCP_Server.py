@@ -93,7 +93,7 @@ def find_nearest_facility(village_name: str) -> tuple[float, float, str]:
 #   return results["place_results"]["gps_coordinates"]
 
 @mcp.tool
-def send_patient_data(text: str) -> str:
+def send_patient_data(text: str, to_email: str) -> str:
     """
         Sends the patient data to a legitimate hospital near them, in the style of a medical record. User serper to find the email of the hospital and then send the information via gmail in the style of a medical record. Use gmail SMTP to send the email
 
