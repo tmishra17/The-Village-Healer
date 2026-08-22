@@ -2,8 +2,6 @@
 
 An AI health assistant for people in rural India (and the Global South broadly) who live far from a doctor. It is **NOT a replacement for doctors** — it never diagnoses. It listens to a patient's story (voice-first, in plain language), assesses **how urgent** the problem is, gives safe self-care guidance for minor issues, and for anything serious it helps the patient actually get to care — accounting for the real barriers of money, distance, and time.
 
-Built as part of the AI Agents capstone (see `agents-capstone-projects.pdf`, "The Village Healer" chapter).
-
 ## The Problem
 
 In many regions of rural India the physician-to-population ratio is roughly 1:100,000 (vs. 1:400 in high-income countries). Villages of 3,000–5,000 people often have no resident doctor; the nearest clinic is a 10–20 km journey that costs bus fare, lost wages, and time a farmer in harvest season cannot spare. Yet almost everyone carries a smartphone. If reliable healthcare *guidance* can live on that phone, a critical gap closes.
@@ -30,14 +28,6 @@ Every health conversation ends in exactly one of three urgency levels:
 | 🟢 **GREEN** | Self-care at home is reasonable | Says exactly what to do and exactly what change would mean "get help" |
 
 Tie-break rule: when unsure between two levels, the agent chooses the more urgent one. The agent's uncertainty raises the level; the user's confidence never lowers it.
-
-### The Three Poverties
-
-Barriers to care come in three forms (after Amartya Sen): **poverty of money** (fees, medicine, fares), **poverty of means** (roads, bus schedules, clinic hours), and **poverty of time** (a farmer loses ₹1,000–2,000/day during harvest). The agent acknowledges these honestly — barriers change the *plan*, never the *urgency*. For urgent cases it reframes the choice as arithmetic the user can own: a small cost today (an afternoon + bus fare + medicine) against a much larger one later (weeks of lost work if an infection spreads). Then the adult decides. The agent informs; it does not command.
-
-### Persuasion With Respect
-
-Modeled on the "Conversation with Rajan" design blueprint in the capstone brief: validate the user's constraints, be honest about risk (e.g., tetanus from a rusty sickle), give concrete route/cost/time information, and invite their agency ("What do you think?"). Reassure about the *process and decision*, never the *outcome* — "everything will be fine" is a banned phrase.
 
 ### Pre-Visit Summary for the Provider
 
@@ -106,7 +96,7 @@ Per the brief, the full system integrates four pillars — agents, retrieval, fi
 
 - [x] Orchestrator agent with RED/YELLOW/GREEN triage protocol and red-flag checklist
 - [x] MCP tool server: web search, village context, nearest-facility lookup, provider email
-- [x] Barrier-aware persuasion (money / means / time) per the Rajan blueprint
+- [] Barrier-aware persuasion (money / means / time) 
 - [ ] **Image classifier** — fine-tuned vision model (ResNet/ViT on the Stanford Skin Dataset) returning top-3 predictions with confidence; evaluated separately by skin tone and condition
 - [ ] **Narrative → SOAP extraction (DSPy)** — a `NarrativeToSOAP` signature optimized with `BootstrapFewShot` on 50–100 hand-labeled (narrative, SOAP) pairs; measure negation handling ("no fever") and hallucinated-vitals rate
 - [ ] **Triage calibration (RLVR)** — reward 1.0 for exact urgency match, 0.5 for adjacent level, 0.0 otherwise, on labeled cases
@@ -115,7 +105,7 @@ Per the brief, the full system integrates four pillars — agents, retrieval, fi
 
 ## Evaluation Plan
 
-Four dimensions, per the brief:
+Four dimensions:
 
 - **Technical** — triage confusion matrix (false *Greens* on true *Reds* matter most), SOAP extraction precision/recall, classifier top-k accuracy stratified by skin tone, < 30 s end-to-end latency.
 - **Clinical** — physician review of 20–30 outputs; verify the cardinal rule holds ("signs suggest infection" ✅, "you have cellulitis" ❌).
@@ -131,8 +121,11 @@ Four dimensions, per the brief:
 - Every substantive reply ends with a reminder: this is guidance, not a diagnosis — see a certified medical professional.
 
 
-# Future add ons
+## Future add ons
 - Ranking based on the quality of search results in serper for the agent
 - Agent using queries to find the nearest village
+
+## Integrations
+- FT comparison folder from Support Vectors lab to help with finetuning and LoRA models
 
 > *"Technology that does not serve the poor, and does not respect their agency, is not innovation."*
