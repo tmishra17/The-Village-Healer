@@ -7,6 +7,7 @@ dependencies = [
     "google-adk>=2.3.0",
     "fastmcp>=3.4.3",
     "litellm>=1.91.0",
+    "adk>=0.0.5",
 ]
 
 [project.optional-dependencies]
@@ -25,3 +26,14 @@ force-include = { "MCP_Server.py" = "MCP_Server.py" }
 [tool.ruff]
 line-length = 100
 target-version = "py310"
+
+[dependency-groups]
+notebook = [
+    "google-cloud-storage>=3.15.0",
+    "matplotlib>=3.10.9",
+    "numpy>=2.2.6",
+    "pandas>=2.3.3",
+    "pillow>=12.3.0",
+    "tabulate>=0.10.0",
+    "tensorflow>=2.21.0",
+]
