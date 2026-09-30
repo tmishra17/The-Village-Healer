@@ -18,6 +18,8 @@ mcp = FastMCP("The Village Healer")
 
 SERPER_API_KEY = os.environ["SERPER_API_KEY"]
 
+OPEN_ROUTER_KEY = os.environ["OPEN_ROUTER_KEY"]
+
 
 @mcp.tool
 def search(query: str) -> dict:
@@ -96,7 +98,7 @@ def find_nearest_facility(village_name: str) -> tuple[float, float, str]:
 def send_patient_data(text: str) -> str:
     """
         Sends the patient data to a legitimate hospital near them, in the style of a medical record. User serper to find the email of the hospital and then send the information via gmail in the style of a medical record. Use gmail SMTP to send the email
-
+    
         IMPORTANT: Only use this on patient request, or in a RED emergency
 
         Argument:
@@ -119,5 +121,28 @@ def send_patient_data(text: str) -> str:
         )
         smtp.send_message(msg)
     return f"Email sent to {to_email}"
+
+
+@mcp.tool()
+def write_to_memory(context: str, name: str):
+    """Write to memory non-rederivable details"""
+    try:
+        with open(f"memory-{name}.md", 'w') as fwrite:
+            fwrite.write(context) 
+    except Exception as e:
+        print(f"Error: {e}")
+
+
+@mcp.tool()
+def read_from_memory(filename: str):
+    """Read memory from vector db storage"""
+    try:
+        with open(filename) as fread:
+            text = fread.text()
+            return text
+    except Exception as e:
+        print(f"Error: {e}")
+    
 if __name__ == "__main__":
     mcp.run(transport="http", host="127.0.0.1", port=9000)
+
