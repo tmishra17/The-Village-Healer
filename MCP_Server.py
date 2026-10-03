@@ -23,15 +23,15 @@ SERPER_API_KEY = os.environ["SERPER_API_KEY"]
 OPEN_ROUTER_KEY = os.environ["OPEN_ROUTER_KEY"]
 
 
-@mcp.tool()
-def search(query: str) -> dict:
+def search(query: str, results_type: str = "/search") -> dict:
     """
-        Return the search results from the serper request
+        Returns articles about the search queries and sends it to serper
 
         IMPORTANT: Please use this to look up the WHO guidlines to provide medical care and nearby care facilities
         
         Arguments:
-            query: string to be used to search in the search bar
+            - query: string to be used to search in the search bar
+            - results_type: type of results you want (e.g. places, news, regular search results)
         
         Returns:
             Formatted dict of the search results
@@ -48,11 +48,27 @@ def search(query: str) -> dict:
     ssl_context = ssl.create_default_context(cafile=certifi.where())
     conn = http.client.HTTPSConnection("google.serper.dev", timeout=30, context=ssl_context)
     try:
-        conn.request("POST", "/places", payload, headers)
+        conn.request("POST", results_type ,payload, headers)
         data = conn.getresponse()
         return json.loads(data.read().decode("utf-8"))
     finally:
         conn.close()
+
+
+@mcp.tool()
+def find_nearest_facility(query: str) -> dict:
+    """
+        Return the search results from the serper request
+
+        IMPORTANT: Please use this to look up the WHO guidlines to provide medical care and nearby care facilities
+        
+        Arguments:
+            query: string to be used to search in the search bar
+        
+        Returns:
+            Formatted dict of the search results
+    """
+    search(query, "/places")
 
 
 
@@ -64,21 +80,21 @@ def search(query: str) -> dict:
 
 
 
-@mcp.tool()
-def find_nearest_facility(village_name: str) -> tuple[float, float, str]:
-  """
-    Based on the location of the village, find the nearest care facility within the patient's budget (government hospital is the cheapest, if they have money, find the nearest hospital). 
+# @mcp.tool()
+# def find_nearest_facility(village_name: str) -> tuple[float, float, str]:
+#   """
+#     Based on the location of the village, find the nearest care facility within the patient's budget (government hospital is the cheapest, if they have money, find the nearest hospital). 
 
-    IMPORTANT: User this only on user request or in RED emergency situation. Use in the query keywords like 'Bolagarh Hospital', 'government hospital near me', 'high quality hospital near me'
+#     IMPORTANT: User this only on user request or in RED emergency situation. Use in the query keywords like 'Bolagarh Hospital', 'government hospital near me', 'high quality hospital near me'
 
-    Returns Tuple of lat, long, and address of nearest hospital
-  """
-  results = search(f"hospital near {village_name}")
-  places = results.get("places") or []
-  if not places:
-    raise ValueError(f"No facilities found near {village_name}")
-  place = places[0]
-  return place["latitude"], place["longitude"], place["address"]
+#     Returns Tuple of lat, long, and address of nearest hospital
+#   """
+#   results = search(f"hospital near {village_name}")
+#   places = results.get("places") or []
+#   if not places:
+#     raise ValueError(f"No facilities found near {village_name}")
+#   place = places[0]
+#   return place["latitude"], place["longitude"], place["address"]
 
 # @mcp.tool
 # def get_village_context(village_name: str, query: str) -> dict:
@@ -145,6 +161,23 @@ def read_from_memory(filename: str):
             return text
     except Exception as e:
         print(f"Error: {e}")
+
+
+def research_symptoms(query: str) -> dict:
+    """
+        Returns articles about the search queries and sends it to serper
+
+        IMPORTANT: Please use this to look up the WHO guidlines to provide medical care and nearby care facilities
+        
+        Arguments:
+            query: string to be used to search in the search bar
+        
+        Returns:
+            Formatted dict of the search results
+    """
+    search(query)
+# how to change the search results to articles
+query = "tetanus symptoms and treatment"
     
 if __name__ == "__main__":
     mcp.run(transport="http", host="127.0.0.1", port=9000)

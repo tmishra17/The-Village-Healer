@@ -7,7 +7,6 @@ dependencies = [
     "google-adk>=2.3.0",
     "fastmcp>=3.4.3",
     "litellm>=1.91.0",
-    "adk>=0.0.5",
     "certifi>=2026.6.17",
 ]
 
