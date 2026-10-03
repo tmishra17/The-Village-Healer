@@ -18,12 +18,17 @@ from dotenv import load_dotenv
 load_dotenv()
 mcp = FastMCP("The Village Healer")
 
+RESULTS_TYPE = {
+    "search": "/search",
+    "places": "/places"
+}
+
 SERPER_API_KEY = os.environ["SERPER_API_KEY"]
 
 OPEN_ROUTER_KEY = os.environ["OPEN_ROUTER_KEY"]
 
 
-def search(query: str, results_type: str = "/search") -> dict:
+def search(query: str, results_type: str) -> dict:
     """
         Returns articles about the search queries and sends it to serper
 
@@ -31,7 +36,7 @@ def search(query: str, results_type: str = "/search") -> dict:
         
         Arguments:
             - query: string to be used to search in the search bar
-            - results_type: type of results you want (e.g. places, news, regular search results)
+            - results_type: type of results you want (right is only places or search option)
         
         Returns:
             Formatted dict of the search results
@@ -56,9 +61,9 @@ def search(query: str, results_type: str = "/search") -> dict:
 
 
 @mcp.tool()
-def find_nearest_facility(query: str) -> dict:
+def find_nearest_facility(query: str) -> dict | None:
     """
-        Return the search results from the serper request
+        Return the search results from the serper request, otherwise None
 
         IMPORTANT: Please use this to look up the WHO guidlines to provide medical care and nearby care facilities
         
@@ -66,9 +71,13 @@ def find_nearest_facility(query: str) -> dict:
             query: string to be used to search in the search bar
         
         Returns:
-            Formatted dict of the search results
+            Formatted dict of the search results or None if the search results failed
     """
-    search(query, "/places")
+    try:
+        return search(query, RESULTS_TYPE["places"])
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
 
 
 
@@ -162,7 +171,7 @@ def read_from_memory(filename: str):
     except Exception as e:
         print(f"Error: {e}")
 
-
+@mcp.tool()
 def research_symptoms(query: str) -> dict:
     """
         Returns articles about the search queries and sends it to serper
@@ -175,7 +184,11 @@ def research_symptoms(query: str) -> dict:
         Returns:
             Formatted dict of the search results
     """
-    search(query)
+    try:
+        return search(query, RESULTS_TYPE["search"])
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
 # how to change the search results to articles
 query = "tetanus symptoms and treatment"
     

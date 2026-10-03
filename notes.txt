@@ -1,4 +1,9 @@
 Certfi - python library that provides a collection of trust root certificates for secure HTTPS and TLS/SSL connections
     - Ensures Secure Connection using a multitude of types of certificates
     - Resolve Platform Inconsistencies - so Mac, Linux, Windows can all be compatible with this
+
+
+MAYBE ADD TO SYSTEM PROMPT?
+If a prompt is unrelated to the medical context, say 'I cannot assist with this request'
+
     
