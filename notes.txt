@@ -1,6 +1,4 @@
-fixed the ollama not found error by doing ollama_chat/gpt-oss-safeguard:20b and routing the link to http://127.0.0.1:11434/v1 instead of http://127.0.0.1:11434
-Pydantic gives you structured outputs
-
-
-TESTS:
-got a cut on my hand, using a rusty sickle, don't know what to do now. 
+Certfi - python library that provides a collection of trust root certificates for secure HTTPS and TLS/SSL connections
+    - Ensures Secure Connection using a multitude of types of certificates
+    - Resolve Platform Inconsistencies - so Mac, Linux, Windows can all be compatible with this
+    

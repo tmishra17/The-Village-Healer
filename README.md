@@ -134,5 +134,3 @@ Four dimensions, per the brief:
 # Future add ons
 - Ranking based on the quality of search results in serper for the agent
 - Agent using queries to find the nearest village
-
-> *"Technology that does not serve the poor, and does not respect their agency, is not innovation."*

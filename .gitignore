@@ -4,3 +4,14 @@ temp.txt
 .venv
 test.py
 test.ipynb
+claude_sessions.txt
+notes.txt
+scin_demo.ipynb
+Village_Healer/.adk/session.db
+Village_Healer/__pycache__/__init__.cpython-312.pyc
+Village_Healer/__pycache__/agent.cpython-312.pyc
+__pycache__/MCP_Server.cpython-312.pyc
+corrections.txt
+notes.txt
+test_mcp_functions.ipynb
+scin_demo.ipynb
