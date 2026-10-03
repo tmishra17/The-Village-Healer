@@ -4998,6 +4998,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "adk" },
+    { name = "certifi" },
     { name = "fastmcp" },
     { name = "google-adk" },
     { name = "litellm" },
@@ -5026,6 +5027,7 @@ notebook = [
 [package.metadata]
 requires-dist = [
     { name = "adk", specifier = ">=0.0.5" },
+    { name = "certifi", specifier = ">=2026.6.17" },
     { name = "fastmcp", specifier = ">=3.4.3" },
     { name = "google-adk", specifier = ">=2.3.0" },
     { name = "litellm", specifier = ">=1.91.0" },

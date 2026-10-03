@@ -8,6 +8,7 @@ dependencies = [
     "fastmcp>=3.4.3",
     "litellm>=1.91.0",
     "adk>=0.0.5",
+    "certifi>=2026.6.17",
 ]
 
 [project.optional-dependencies]

@@ -7,7 +7,9 @@ import json
 import os
 import smtplib
 import http.client
+import ssl
 from email.message import EmailMessage
+import certifi
 from dotenv import load_dotenv
 
 
@@ -21,12 +23,12 @@ SERPER_API_KEY = os.environ["SERPER_API_KEY"]
 OPEN_ROUTER_KEY = os.environ["OPEN_ROUTER_KEY"]
 
 
-@mcp.tool
+@mcp.tool()
 def search(query: str) -> dict:
     """
         Return the search results from the serper request
 
-        IMPORTANT: Please use this to look up the WHO guidlines to provide medical care
+        IMPORTANT: Please use this to look up the WHO guidlines to provide medical care and nearby care facilities
         
         Arguments:
             query: string to be used to search in the search bar
@@ -43,7 +45,8 @@ def search(query: str) -> dict:
         'Content-Type': 'application/json'
     }
     
-    conn = http.client.HTTPSConnection("google.serper.dev", timeout=30)
+    ssl_context = ssl.create_default_context(cafile=certifi.where())
+    conn = http.client.HTTPSConnection("google.serper.dev", timeout=30, context=ssl_context)
     try:
         conn.request("POST", "/places", payload, headers)
         data = conn.getresponse()
@@ -51,7 +54,6 @@ def search(query: str) -> dict:
     finally:
         conn.close()
 
-    # New connection per call — reused HTTPSConnection dies after keep-alive close.
 
 
 # server_params — the StdioServerParameters from above (the "how to launch").
@@ -62,7 +64,7 @@ def search(query: str) -> dict:
 
 
 
-@mcp.tool
+@mcp.tool()
 def find_nearest_facility(village_name: str) -> tuple[float, float, str]:
   """
     Based on the location of the village, find the nearest care facility within the patient's budget (government hospital is the cheapest, if they have money, find the nearest hospital). 
@@ -94,12 +96,13 @@ def find_nearest_facility(village_name: str) -> tuple[float, float, str]:
 
 #   return results["place_results"]["gps_coordinates"]
 
-@mcp.tool
+@mcp.tool()
 def send_patient_data(text: str) -> str:
     """
         Sends the patient data to a legitimate hospital near them, in the style of a medical record. User serper to find the email of the hospital and then send the information via gmail in the style of a medical record. Use gmail SMTP to send the email
     
         IMPORTANT: Only use this on patient request, or in a RED emergency
+
 
         Argument:
             text: patient information formatted in the style of a medical record
@@ -145,4 +148,3 @@ def read_from_memory(filename: str):
     
 if __name__ == "__main__":
     mcp.run(transport="http", host="127.0.0.1", port=9000)
-
