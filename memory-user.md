@@ -1,1 +1,0 @@
-Rice farmer, Kujhala village. Cut left hand with a rusty sickle ~1 day ago. Wound is deep, still open, no bleeding, swollen, pus present. No fever/chills, no jaw stiffness or trouble swallowing, can move all fingers. Tetanus vaccination history unknown. Advised YELLOW - health worker within 1-2 days.

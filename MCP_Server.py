@@ -155,7 +155,7 @@ def send_patient_data(text: str) -> str:
 def write_to_memory(context: str, name: str):
     """Write to memory non-rederivable details"""
     try:
-        with open(f"memory-{name}.md", 'w') as fwrite:
+        with open(f"memory/memory-{name}.md", 'w') as fwrite:
             fwrite.write(context) 
     except Exception as e:
         print(f"Error: {e}")
@@ -165,7 +165,7 @@ def write_to_memory(context: str, name: str):
 def read_from_memory(filename: str):
     """Read memory from vector db storage"""
     try:
-        with open(filename) as fread:
+        with open(f"memory/{filename}") as fread:
             text = fread.text()
             return text
     except Exception as e:
