@@ -99,14 +99,17 @@ Target village: **Bolagarh, Odisha** — the capstone requires a real village wi
    ```bash
    uv run adk web
    ```
-
+4. Run the server with fastMCP:
+   ```bash
+   uv run python3 MCP_Server.py
+   ```
 ## Capstone Roadmap
 
 Per the brief, the full system integrates four pillars — agents, retrieval, fine-tuning, and MLOps. Current status:
 
 - [x] Orchestrator agent with RED/YELLOW/GREEN triage protocol and red-flag checklist
 - [x] MCP tool server: web search, village context, nearest-facility lookup, provider email
-- [x] Barrier-aware persuasion (money / means / time) per the Rajan blueprint
+- [] Barrier-aware persuasion (money / means / time) per the Rajan blueprint
 - [ ] **Image classifier** — fine-tuned vision model (ResNet/ViT on the Stanford Skin Dataset) returning top-3 predictions with confidence; evaluated separately by skin tone and condition
 - [ ] **Narrative → SOAP extraction (DSPy)** — a `NarrativeToSOAP` signature optimized with `BootstrapFewShot` on 50–100 hand-labeled (narrative, SOAP) pairs; measure negation handling ("no fever") and hallucinated-vitals rate
 - [ ] **Triage calibration (RLVR)** — reward 1.0 for exact urgency match, 0.5 for adjacent level, 0.0 otherwise, on labeled cases
