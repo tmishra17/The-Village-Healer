@@ -26,7 +26,7 @@ def get_mcp_tools():
 search_tools = get_mcp_tools()
 
 MODEL = LiteLlm(
-    model="openrouter/stealth/space-bunny-alpha",
+    model="openrouter/apodex/apodex-1.1-mini:free",
     api_key=OPEN_ROUTER_KEY,
 ) 
 
